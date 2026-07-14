@@ -5,6 +5,12 @@ function isValidEmail(email) {
 }
 
 class User {
+  #id;
+  #name;
+  #email;
+  #createdAt;
+  #updatedAt;
+
   constructor(name, email) {
     if (name === undefined || name === null || name.trim() === "") {
       throw new Error("사용자 이름은 비어있으면 안 됩니다.");
@@ -18,11 +24,31 @@ class User {
       throw new Error("올바른 이메일 형식으로 입력하세요.");
     }
 
-    this.id = userId++;
-    this.name = name;
-    this.email = email;
-    this.createdAt = new Date().toISOString();
-    this.updatedAt = new Date().toISOString();
+    this.#id = userId++;
+    this.#name = name;
+    this.#email = email;
+    this.#createdAt = new Date().toISOString();
+    this.#updatedAt = new Date().toISOString();
+  }
+
+  get id() {
+    return this.#id;
+  }
+
+  get name() {
+    return this.#name;
+  }
+
+  get email() {
+    return this.#email;
+  }
+
+  get createdAt() {
+    return this.#createdAt;
+  }
+
+  get updatedAt() {
+    return this.#updatedAt;
   }
 
   updateUser(name, email) {
@@ -38,18 +64,18 @@ class User {
       throw new Error("올바른 이메일 형식으로 입력하세요.");
     }
 
-    this.name = name;
-    this.email = email;
-    this.updatedAt = new Date().toISOString();
+    this.#name = name;
+    this.#email = email;
+    this.#updatedAt = new Date().toISOString();
   }
 
   displayInfo() {
     console.log({
-      id: this.id,
-      name: this.name,
-      email: this.email,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt
+      id: this.#id,
+      name: this.#name,
+      email: this.#email,
+      createdAt: this.#createdAt,
+      updatedAt: this.#updatedAt
     });
   }
 }

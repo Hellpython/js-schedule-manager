@@ -27,6 +27,32 @@ class ScheduleManager {
     return this.schedules.filter(schedule => String(schedule.userId) === String(userId));
   }
 
+  getSchedulesByUserSortedByDate(user) {
+    return [...this.getSchedulesByUser(user)].sort((a, b) => {
+      const first = `${a.startDate} ${a.startTime}`;
+      const second = `${b.startDate} ${b.startTime}`;
+      return first.localeCompare(second);
+    });
+  }
+
+  getSchedulesByUserSortedByPriority(user) {
+    const priorityOrder = {
+      LOW: 1,
+      MEDIUM: 2,
+      HIGH: 3
+    };
+
+    return [...this.getSchedulesByUser(user)].sort((a, b) =>
+      priorityOrder[b.priority] - priorityOrder[a.priority]
+    );
+  }
+
+  getSchedulesByUserSortedByCompletion(user) {
+    return [...this.getSchedulesByUser(user)].sort((a, b) =>
+      Number(a.isCompleted) - Number(b.isCompleted)
+    );
+  }
+
   addSchedule(schedule) {
     this.schedules.push(schedule);
     console.log("스케줄 추가 완료요!");
@@ -35,6 +61,10 @@ class ScheduleManager {
   displayAllSchedules(user) {
     const schedules = this.getSchedulesByUser(user);
 
+    this.displaySchedules(schedules);
+  }
+
+  displaySchedules(schedules) {
     if (schedules.length === 0) {
       console.log("저장된 일정이 없음요");
       return;
@@ -45,7 +75,6 @@ class ScheduleManager {
     for (const schedule of schedules) {
       schedule.displayInfo();
     }
-
   }
 
   displaySchedule(user) {

@@ -490,11 +490,14 @@ async function displayScheduleById() {
   const id = (await rl.question("자세히 볼 일정 ID: ")).trim();
   const item = manager.findById(id, user);
 
-  if (item === undefined) {
+  if (item === undefined && false) {
     console.log("없는 일정입니다.");
     return;
   }
 
+  console.log("=== 소유 사용자 정보 ===");
+  user.displayInfo();
+  console.log("=== 일정 정보 ===");
   item.displayInfo();
 }
 
@@ -652,9 +655,10 @@ async function sortByUserAndDate() {
     return;
   }
 
-  manager.sortByDate();
+  const schedules = manager.getSchedulesByUserSortedByDate(user);
+
   console.log("사용자별 날짜순 정렬 완료");
-  manager.displayAllSchedules(user);
+  manager.displaySchedules(schedules);
 }
 
 async function sortByUserAndPriority() {
@@ -664,9 +668,10 @@ async function sortByUserAndPriority() {
     return;
   }
 
-  manager.sortByPriority();
+  const schedules = manager.getSchedulesByUserSortedByPriority(user);
+
   console.log("사용자별 중요도순 정렬 완료");
-  manager.displayAllSchedules(user);
+  manager.displaySchedules(schedules);
 }
 
 async function sortByUserAndCompletion() {
@@ -676,9 +681,10 @@ async function sortByUserAndCompletion() {
     return;
   }
 
-  manager.sortByCompletion();
+  const schedules = manager.getSchedulesByUserSortedByCompletion(user);
+
   console.log("사용자별 완료 여부순 정렬 완료");
-  manager.displayAllSchedules(user);
+  manager.displaySchedules(schedules);
 }
 
 async function main() {
