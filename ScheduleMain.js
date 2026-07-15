@@ -359,6 +359,15 @@ async function deleteUser() {
     return;
   }
 
+  const relatedMeeting = manager.getSchedulesByRelatedUserId(user.id).find(schedule =>
+    schedule.getScheduleType() === "MEETING"
+  );
+
+  if (relatedMeeting !== undefined) {
+    console.log("이 사용자는 회의 사용자로 등록되어 있어서 삭제가 불가능합니다.");
+    return;
+  }
+
   userManager.deleteUser(user.id);
 }
 
@@ -408,9 +417,33 @@ async function addSchedule() {
     );
   } else if (type === 2) {
     const location = (await rl.question("장소: ")).trim();
-    const participants = (await rl.question("참석자: ")).trim();
+    const participants = (await rl.question("참여자 ID 목록(쉼표로 구분): "))
+      .split(",")
+      .map(id => id.trim())
+      .filter(id => id !== "");
     const agenda = (await rl.question("안건: ")).trim();
-    const host = (await rl.question("주최자: ")).trim();
+    const host = (await rl.question("주최자 ID: ")).trim();
+
+    if (participants.length === 0) {
+      console.log("회의 참여자는 한 명 이상 입력해야 합니다.");
+      return;
+    }
+
+    const hostUser = userManager.findById(host);
+
+    if (hostUser === undefined) {
+      console.log("존재하지 않는 주최자 ID입니다.");
+      return;
+    }
+
+    for (const participantId of participants) {
+      const participantUser = userManager.findById(participantId);
+
+      if (participantUser === undefined) {
+        console.log(`존재하지 않는 참여자 ID입니다: ${participantId}`);
+        return;
+      }
+    }
 
     newItem = new MeetingSchedule(
       base.title,

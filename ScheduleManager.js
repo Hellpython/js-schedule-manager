@@ -27,6 +27,23 @@ class ScheduleManager {
     return this.schedules.filter(schedule => String(schedule.userId) === String(userId));
   }
 
+  getRelatedUserIds(schedule) {
+    const userIds = [schedule.userId];
+
+    if (schedule.getScheduleType() === "MEETING") {
+      userIds.push(schedule.host);
+      userIds.push(...schedule.participants);
+    }
+
+    return [...new Set(userIds.map(id => String(id)))];
+  }
+
+  getSchedulesByRelatedUserId(userId) {
+    return this.schedules.filter(schedule =>
+      this.getRelatedUserIds(schedule).includes(String(userId))
+    );
+  }
+
   getSchedulesByUserSortedByDate(user) {
     return [...this.getSchedulesByUser(user)].sort((a, b) => {
       const first = `${a.startDate} ${a.startTime}`;

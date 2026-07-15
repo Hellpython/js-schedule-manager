@@ -63,20 +63,25 @@ class ScheduleWorker {
   }
 
   hasConflict(newItem) {
-    const schedules = this.manager.getSchedulesByUserId(newItem.userId);
-
-
+    const userIds = newItem.getScheduleType() === "MEETING"
+      ? this.manager.getRelatedUserIds(newItem)
+      : [String(newItem.userId)];
     const newStart = `${newItem.startDate} ${newItem.startTime}`;
     const newEnd = `${newItem.endDate} ${newItem.endTime}`;
 
-    for (const existing of schedules) {
-      const existingStart = `${existing.startDate} ${existing.startTime}`;
-      const existingEnd = `${existing.endDate} ${existing.endTime}`;
+    for (const userId of userIds) {
+      const schedules = this.manager.getSchedulesByRelatedUserId(userId);
 
-      if (newStart < existingEnd && newEnd > existingStart) {
-        console.log("겹치는 일정이 있어서 등록할 수 없습니다.");
-        existing.displayInfo();
-        return true;
+      for (const existing of schedules) {
+        const existingStart = `${existing.startDate} ${existing.startTime}`;
+        const existingEnd = `${existing.endDate} ${existing.endTime}`;
+
+        if (newStart < existingEnd && newEnd > existingStart) {
+          console.log("겹치는 일정이 있어서 등록할 수 없습니다.");
+          console.log(`충돌 사용자 ID: ${userId}`);
+          existing.displayInfo();
+          return true;
+        }
       }
     }
 
